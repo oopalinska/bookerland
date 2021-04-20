@@ -1,6 +1,5 @@
 package pl.oopalinska.bookerland.catalog.domain;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +18,12 @@ public class CatalogService {
         return repository.findAll()
                          .stream()
                          .filter(book -> book.getTitle().startsWith(title))
+                         .collect(Collectors.toList());
+    }
+    public List<Book> findByAuthor(String author) {
+        return repository.findAll()
+                         .stream()
+                         .filter(book -> book.getAuthor().contains(author))
                          .collect(Collectors.toList());
     }
 }
