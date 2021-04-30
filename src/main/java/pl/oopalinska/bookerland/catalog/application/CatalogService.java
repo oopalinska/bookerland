@@ -51,7 +51,6 @@ class CatalogService implements CatalogUseCase {
     public void removeById(Long id){
         repository.removeById(id);
     }
-
     @Override
     public UpdateBookResponse updateBook(UpdateBookCommand command) {
         return repository
