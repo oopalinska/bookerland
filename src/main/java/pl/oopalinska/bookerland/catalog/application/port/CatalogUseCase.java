@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import pl.oopalinska.bookerland.catalog.domain.Book;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,8 @@ public interface CatalogUseCase {
     List<Book> findAll();
 
     List<Book> findByTitle(String title);
+
+    Optional<Book> findOneByTitle(String title);
 
     List<Book> findByAuthor(String author);
 
@@ -28,6 +31,11 @@ public interface CatalogUseCase {
         String title;
         String author;
         Integer year;
+        BigDecimal price;
+
+        public Book toBook() {
+            return new Book(title, author, year, price);
+        }
     }
 
     @Value

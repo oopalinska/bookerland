@@ -1,6 +1,6 @@
 package pl.oopalinska.bookerland.order.infrastructure;
 
-import pl.oopalinska.bookerland.catalog.domain.Book;
+import org.springframework.stereotype.Repository;
 import pl.oopalinska.bookerland.order.domain.Order;
 import pl.oopalinska.bookerland.order.domain.OrderRepository;
 
@@ -11,9 +11,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Repository
 public class MemoryOrderRepository implements OrderRepository {
     private final Map<Long, Order> storage = new ConcurrentHashMap<>();
-    private final AtomicLong NEXT_ID = new AtomicLong(0L);
+    private final AtomicLong NEXT_ID = new AtomicLong(1L);
 
     @Override
     public List<Order> findAll() {
