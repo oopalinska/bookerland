@@ -8,6 +8,7 @@ import pl.oopalinska.bookerland.catalog.domain.CatalogRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,33 +31,43 @@ class CatalogService implements CatalogUseCase {
     public List<Book> findByTitle(String title) {
         return repository.findAll()
                          .stream()
-                         .filter(book -> book.getTitle().startsWith(title))
+                         .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
                          .collect(Collectors.toList());
     }
 
     @Override
     public Optional<Book> findOneByTitle(String title) {
         return repository.findAll()
-                .stream()
-                .filter(book -> book.getTitle().startsWith(title))
-                .findFirst();
+                         .stream()
+                         .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
+                         .findFirst();
     }
 
     @Override
     public List<Book> findByAuthor(String author) {
         return repository.findAll()
                          .stream()
-                         .filter(book -> book.getAuthor().contains(author))
+                         .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
                          .collect(Collectors.toList());
     }
+    @Override
+    public List<Book> findByTitleAndAuthor(String title, String author) {
+        return repository.findAll()
+                         .stream()
+                         .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                         .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
+                         .collect(Collectors.toList());
+    }
+
     @Override
     public Optional<Book> findOneByTitleAndAuthor(String title, String author) {
         return repository.findAll()
                          .stream()
-                         .filter(book -> book.getTitle().startsWith(title))
-                         .filter(book -> book.getAuthor().contains(author))
+                         .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                         .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
                          .findFirst();
     }
+
     @Override
     public void addBook(CreateBookCommand command) {
         Book book = command.toBook();
