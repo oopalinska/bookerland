@@ -20,6 +20,12 @@ class CatalogService implements CatalogUseCase {
     public List<Book> findAll() {
         return repository.findAll();
     }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        return repository.findById(id);
+    }
+
     @Override
     public List<Book> findByTitle(String title) {
         return repository.findAll()

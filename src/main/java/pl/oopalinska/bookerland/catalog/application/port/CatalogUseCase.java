@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface CatalogUseCase {
     List<Book> findAll();
 
+    Optional<Book> findById(Long id);
+
     List<Book> findByTitle(String title);
 
     Optional<Book> findOneByTitle(String title);
