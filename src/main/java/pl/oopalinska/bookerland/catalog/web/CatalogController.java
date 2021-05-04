@@ -10,6 +10,10 @@ import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase;
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.CreateBookCommand;
 import pl.oopalinska.bookerland.catalog.domain.Book;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
@@ -46,7 +50,7 @@ public class CatalogController {
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addBook(@RequestBody RestCreateBookCommand command) {
+    public ResponseEntity<Void> addBook(@Valid @RequestBody RestCreateBookCommand command) {
         Book book = catalog.addBook(command.toCommand());
         return ResponseEntity.created(createdBookUri(book)).build();
     }
@@ -63,9 +67,14 @@ public class CatalogController {
 
     @Data
     private static class RestCreateBookCommand {
+        @NotBlank
         private String title;
+        @NotBlank
         private String author;
+        @NotNull
         private Integer year;
+        @NotNull
+        @DecimalMin("0.00")
         private BigDecimal price;
 
         CreateBookCommand toCommand() {
