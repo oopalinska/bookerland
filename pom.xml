@@ -16,7 +16,7 @@
 	<properties>
 		<java.version>15</java.version>
 		<lombok.version>1.18.12</lombok.version>
-		<hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
+		<hibernate.validator.version>6.2.0.Final</hibernate.validator.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -26,7 +26,7 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>${hibernate.validator.version}</version>
 		</dependency>
