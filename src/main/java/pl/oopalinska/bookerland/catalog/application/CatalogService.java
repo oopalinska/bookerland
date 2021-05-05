@@ -5,17 +5,18 @@ import org.springframework.stereotype.Service;
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase;
 import pl.oopalinska.bookerland.catalog.domain.Book;
 import pl.oopalinska.bookerland.catalog.domain.CatalogRepository;
+import pl.oopalinska.bookerland.uploads.application.ports.UploadUseCase;
+import pl.oopalinska.bookerland.uploads.application.ports.UploadUseCase.SaveUploadCommand;
+import pl.oopalinska.bookerland.uploads.domain.Upload;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 class CatalogService implements CatalogUseCase {
     private final CatalogRepository repository;
+    private final UploadUseCase upload;
 
     @Override
     public List<Book> findAll() {
@@ -86,16 +87,16 @@ class CatalogService implements CatalogUseCase {
                     repository.save(book);
                     return UpdateBookResponse.SUCCESS;
                 })
-                .orElseGet(() -> new UpdateBookResponse(false, Arrays.asList("Book not found with id: " + command.getId())));
+                .orElseGet(() -> new UpdateBookResponse(false, Collections.singletonList("Book not found with id: " + command.getId())));
     }
 
     @Override
     public void updateBookCover(UpdateBookCoverCommand command) {
-        int length = command.getFile().length;
-        System.out.println("Received cover command: " + command.getFileName() + " bytes: " + length);
         repository.findById(command.getId())
                   .ifPresent(book -> {
-//                    book.setCoverId();
-    });
+                      Upload savedUpload = upload.save(new SaveUploadCommand(command.getFileName(), command.getFile(), command.getContentType()));
+                      book.setCoverId(savedUpload.getId());
+                      repository.save(book);
+                  });
     }
 }
