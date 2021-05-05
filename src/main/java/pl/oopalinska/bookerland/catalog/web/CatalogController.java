@@ -5,19 +5,24 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase;
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.CreateBookCommand;
+import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.UpdateBookCommand;
+import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.UpdateBookCoverCommand;
+import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.oopalinska.bookerland.catalog.domain.Book;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequestMapping("/catalog")
 @RestController
@@ -48,10 +53,33 @@ public class CatalogController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateBook(@PathVariable Long id, @RequestBody RestBookCommand command) {
+        UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
+        if(!response.isSuccess()) {
+            String message = String.join(",", response.getErrors());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+    }
+
+    @PutMapping("/{id}/cover")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void addBookCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        System.out.println("Got file: " + file.getOriginalFilename());
+        catalog.updateBookCover(new UpdateBookCoverCommand(
+                id,
+                file.getBytes(),
+                file.getContentType(),
+                file.getOriginalFilename()
+        ));
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addBook(@Valid @RequestBody RestCreateBookCommand command) {
-        Book book = catalog.addBook(command.toCommand());
+    public ResponseEntity<Void> addBook(@Valid @RequestBody RestBookCommand command) {
+        Book book = catalog.addBook(command.toCreateCommand());
         return ResponseEntity.created(createdBookUri(book)).build();
     }
 
@@ -66,10 +94,10 @@ public class CatalogController {
     }
 
     @Data
-    private static class RestCreateBookCommand {
-        @NotBlank
+    private static class RestBookCommand {
+        @NotBlank(message = "Please provide a title")
         private String title;
-        @NotBlank
+        @NotBlank(message = "Please provide an author")
         private String author;
         @NotNull
         private Integer year;
@@ -77,8 +105,11 @@ public class CatalogController {
         @DecimalMin("0.00")
         private BigDecimal price;
 
-        CreateBookCommand toCommand() {
+        CreateBookCommand toCreateCommand() {
             return new CreateBookCommand(title, author, year, price);
+        }
+        UpdateBookCommand toUpdateCommand(Long id) {
+            return new UpdateBookCommand(id, title, author, year, price);
         }
     }
 }

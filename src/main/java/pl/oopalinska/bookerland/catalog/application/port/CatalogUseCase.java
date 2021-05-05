@@ -1,5 +1,6 @@
 package pl.oopalinska.bookerland.catalog.application.port;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import pl.oopalinska.bookerland.catalog.domain.Book;
@@ -30,6 +31,16 @@ public interface CatalogUseCase {
 
     UpdateBookResponse updateBook(UpdateBookCommand command);
 
+    void updateBookCover(UpdateBookCoverCommand command);
+
+    @Value
+    class UpdateBookCoverCommand {
+        Long id;
+        byte[] file;
+        String contentType;
+        String fileName;
+    }
+
     @Value
     class CreateBookCommand {
         String title;
@@ -44,11 +55,13 @@ public interface CatalogUseCase {
 
     @Value
     @Builder
+    @AllArgsConstructor
     class UpdateBookCommand {
         Long id;
         String title;
         String author;
         Integer year;
+        BigDecimal price;
 
         public Book updateFields(Book book) {
             if (title != null) {
@@ -59,6 +72,9 @@ public interface CatalogUseCase {
             }
             if (year != null) {
                 book.setYear(year);
+            }
+            if (price != null) {
+                book.setPrice(price);
             }
             return book;
         }

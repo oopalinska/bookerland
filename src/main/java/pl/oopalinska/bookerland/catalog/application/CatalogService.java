@@ -88,4 +88,14 @@ class CatalogService implements CatalogUseCase {
                 })
                 .orElseGet(() -> new UpdateBookResponse(false, Arrays.asList("Book not found with id: " + command.getId())));
     }
+
+    @Override
+    public void updateBookCover(UpdateBookCoverCommand command) {
+        int length = command.getFile().length;
+        System.out.println("Received cover command: " + command.getFileName() + " bytes: " + length);
+        repository.findById(command.getId())
+                  .ifPresent(book -> {
+//                    book.setCoverId();
+    });
+    }
 }
