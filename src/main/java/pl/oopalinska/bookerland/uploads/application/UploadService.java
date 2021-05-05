@@ -6,7 +6,6 @@ import pl.oopalinska.bookerland.uploads.application.ports.UploadUseCase;
 import pl.oopalinska.bookerland.uploads.domain.Upload;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,5 +33,10 @@ public class UploadService implements UploadUseCase {
     public Optional<Upload> getById(String id) {
         storage.get(id);
         return Optional.ofNullable(storage.get(id));
+    }
+
+    @Override
+    public void removeById(String id) {
+        storage.remove(id);
     }
 }
