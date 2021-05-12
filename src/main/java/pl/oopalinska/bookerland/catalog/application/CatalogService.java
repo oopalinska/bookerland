@@ -78,12 +78,12 @@ class CatalogService implements CatalogUseCase {
     public void removeById(Long id){
         repository.removeById(id);
     }
+
     @Override
     public UpdateBookResponse updateBook(UpdateBookCommand command) {
         return repository
                 .findById(command.getId())
                 .map(book -> {
-                    Book updatedBook = command.updateFields(book);
                     repository.save(book);
                     return UpdateBookResponse.SUCCESS;
                 })

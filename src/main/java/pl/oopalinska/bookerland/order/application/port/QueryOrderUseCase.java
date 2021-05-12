@@ -12,27 +12,25 @@ import java.util.List;
 import java.util.Optional;
 
 public interface QueryOrderUseCase {
-    List<RichOrder> findAll();
-    Optional<RichOrder> findById(Long id);
+    List<Order> findAll();
 
-    @Value
-    class RichOrder {
-        Long id;
-        OrderStatus status;
-        List<RichOrderItem> items;
-        Recipient recipient;
-        LocalDateTime createdAt;
+    Optional<Order> findById(Long id);
 
-        public BigDecimal totalPrice() {
-            return items.stream()
-                    .map(item -> item.getBook().getPrice().multiply(new BigDecimal(item.getQuantity())))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
-    }
-
-    @Value
-    class RichOrderItem {
-        Book book;
-        int quantity;
-    }
+//    @Value
+//    class RichOrder {
+//        Long id;
+//        OrderStatus status;
+//        List<RichOrderItem> items;
+//        Recipient recipient;
+//        LocalDateTime createdAt;
+//
+//        }
+//    }
+//
+//    @Value
+//    class RichOrderItem {
+//        Book book;
+//        int quantity;
+//    }
+//}
 }

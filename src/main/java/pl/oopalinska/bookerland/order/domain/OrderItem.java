@@ -5,6 +5,6 @@ import pl.oopalinska.bookerland.catalog.domain.Book;
 
 @Value
 public class OrderItem {
-    Long bookId;
+    Book book;
     int quantity;
 }

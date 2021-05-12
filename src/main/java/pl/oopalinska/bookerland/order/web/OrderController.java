@@ -7,15 +7,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
-import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
-import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
+import pl.oopalinska.bookerland.catalog.domain.Book;
+import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase;
+import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
+import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase.PlaceOrderResponse;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
-import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase.RichOrder;
+import pl.oopalinska.bookerland.order.domain.Order;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
 import pl.oopalinska.bookerland.order.domain.Recipient;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,27 +26,30 @@ import java.util.stream.Collectors;
 @RestController
 @AllArgsConstructor
 public class OrderController {
-    private final ManipulateOrderUseCase manipulateOrder;
-    private final QueryOrderUseCase queryOrder;
+    private final PlaceOrderUseCase placeOrderService;
+    private final QueryOrderUseCase queryOrderService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RichOrder> getAllOrders() {
-        return queryOrder.findAll();
+    public List<Order> getAllOrders() {
+        return queryOrderService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id) {
-        return queryOrder.findById(id)
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+        return queryOrderService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> createOrder(@RequestBody CreateOrderCommand command) {
-        PlaceOrderResponse response = manipulateOrder.placeOrder(command.toPlaceOrderCommand());
-        return ResponseEntity.created(createdOrderUri(response.getOrderId())).build();
+    public ResponseEntity<Void> createOrder(@Valid @RequestBody CreateOrderCommand command) {
+        PlaceOrderResponse response = placeOrderService.placeOrder(command.toPlaceOrderCommand());
+        if (!response.isSuccess()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, response.getErrors().toString());
+        }
+            return ResponseEntity.created(createdOrderUri(response.getOrderId())).build();
     }
     private URI createdOrderUri(Long orderId) {
         return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + orderId.toString()).build().toUri();
@@ -53,16 +58,16 @@ public class OrderController {
     @PutMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateOrderStatus(@PathVariable Long id, @RequestBody UpdateStatusCommand command) {
-        OrderStatus orderStatus = OrderStatus
+        var orderStatus = OrderStatus
                 .parseString(command.status)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown status: " + command.status));
-        manipulateOrder.updateOrderStatus(id, orderStatus);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't update... " + command.status));
+        placeOrderService.updateOrderStatus(id, orderStatus);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
-        manipulateOrder.deleteOrderById(id);
+        placeOrderService.deleteOrderById(id);
     }
 
     @Data
@@ -73,14 +78,14 @@ public class OrderController {
         PlaceOrderCommand toPlaceOrderCommand() {
             List<OrderItem> orderItems = items
                     .stream()
-                    .map(item -> new OrderItem(item.bookId, item.quantity))
+                    .map(item -> new OrderItem(item.getBook(), item.quantity))
                     .collect(Collectors.toList());
             return new PlaceOrderCommand(orderItems, recipient.toRecipient());
         }
     }
     @Data
     static class OrderItemCommand {
-        Long bookId;
+        Book book;
         int quantity;
     }
 

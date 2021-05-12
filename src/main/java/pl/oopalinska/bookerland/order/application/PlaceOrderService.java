@@ -2,19 +2,19 @@ package pl.oopalinska.bookerland.order.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
+import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase;
 import pl.oopalinska.bookerland.order.domain.Order;
 import pl.oopalinska.bookerland.order.domain.OrderRepository;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
 
 @Service
 @RequiredArgsConstructor
-public class ManipulateOrderService implements ManipulateOrderUseCase {
+public class PlaceOrderService implements PlaceOrderUseCase {
     private final OrderRepository repository;
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
-        Order order = Order
+        var order = Order
                 .builder()
                 .recipient(command.getRecipient())
                 .items(command.getItems())

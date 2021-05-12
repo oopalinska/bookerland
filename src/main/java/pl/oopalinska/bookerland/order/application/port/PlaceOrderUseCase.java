@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 
-public interface ManipulateOrderUseCase {
+public interface PlaceOrderUseCase {
     PlaceOrderResponse placeOrder(PlaceOrderCommand command);
 
     @Builder

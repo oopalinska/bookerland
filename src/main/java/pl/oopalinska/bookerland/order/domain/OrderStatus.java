@@ -10,7 +10,7 @@ public enum OrderStatus {
 
     public static Optional<OrderStatus> parseString(String value) {
         return Arrays.stream(values())
-                .filter(it -> StringUtils.equalsIgnoreCase(it.name(), value))
+                .filter(status -> StringUtils.equalsIgnoreCase(status.name(), value))
                 .findFirst();
     }
 }
