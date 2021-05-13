@@ -48,11 +48,20 @@ public class CatalogController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
+    public ResponseEntity<Book> getById(@PathVariable Long id) {
         return catalog
                 .findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> addBook(@Valid @RequestBody RestBookCommand command) {
+        var book = catalog.addBook(command.toCreateCommand());
+        return ResponseEntity.created(createdBookUri(book)).build();
+    }
+    private URI createdBookUri(Book book) {
+        return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
     }
 
     @PutMapping("/{id}")
@@ -60,7 +69,7 @@ public class CatalogController {
     public void updateBook(@PathVariable Long id, @RequestBody RestBookCommand command) {
         UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
         if(!response.isSuccess()) {
-            String message = String.join(",", response.getErrors());
+            var message = String.join(",", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
     }
@@ -81,16 +90,6 @@ public class CatalogController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeBookCover(@PathVariable Long id) {
         catalog.removeBookCover(id);
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addBook(@Valid @RequestBody RestBookCommand command) {
-        Book book = catalog.addBook(command.toCreateCommand());
-        return ResponseEntity.created(createdBookUri(book)).build();
-    }
-    private URI createdBookUri(Book book) {
-        return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
     }
 
     @DeleteMapping("/{id}")

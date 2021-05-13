@@ -107,7 +107,8 @@ public class ApplicationStartup implements CommandLineRunner {
         System.out.println("Updating book...");
         catalog.findOneByTitleAndAuthor("Pan Tadeusz", "Adam Mickiewicz")
                 .ifPresent(book -> {
-                    UpdateBookCommand command = UpdateBookCommand.builder()
+                    UpdateBookCommand command = UpdateBookCommand
+                            .builder()
                             .id(book.getId())
                             .title("Pan Tadeusz, czyli Ostatni Zajazd na Litwie")
                             .build();

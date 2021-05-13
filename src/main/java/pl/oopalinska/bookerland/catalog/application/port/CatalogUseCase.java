@@ -84,9 +84,9 @@ public interface CatalogUseCase {
 
     @Value
     class UpdateBookResponse {
-        public static UpdateBookResponse SUCCESS = new UpdateBookResponse(true, Collections.emptyList());
-
         boolean success;
         List<String> errors;
+
+        public static UpdateBookResponse SUCCESS = new UpdateBookResponse(true, Collections.emptyList());
     }
 }
