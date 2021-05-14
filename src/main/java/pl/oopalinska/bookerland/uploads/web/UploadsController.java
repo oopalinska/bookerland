@@ -25,7 +25,7 @@ public class UploadsController {
     public ResponseEntity<UploadResponse> getUpload(@PathVariable String id) {
         return upload.getById(id)
                 .map(file -> {
-                    UploadResponse response = new UploadResponse(
+                    var response = new UploadResponse(
                         file.getId(),
                         file.getContentType(),
                         file.getFileName(),

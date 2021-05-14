@@ -15,6 +15,7 @@ import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.UpdateBo
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.UpdateBookCoverCommand;
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.oopalinska.bookerland.catalog.domain.Book;
+import pl.oopalinska.bookerland.web.CreatedURI;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
@@ -61,7 +62,7 @@ public class CatalogController {
         return ResponseEntity.created(createdBookUri(book)).build();
     }
     private URI createdBookUri(Book book) {
-        return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
+        return new CreatedURI("/" + book.getId().toString()).uri();
     }
 
     @PutMapping("/{id}")
@@ -72,6 +73,11 @@ public class CatalogController {
             var message = String.join(",", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
+    }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id) {
+        catalog.removeById(id);
     }
 
     @PutMapping(value = "/{id}/cover", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -85,17 +91,10 @@ public class CatalogController {
                 file.getOriginalFilename()
         ));
     }
-
     @DeleteMapping("/{id}/cover")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeBookCover(@PathVariable Long id) {
         catalog.removeBookCover(id);
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@PathVariable Long id) {
-        catalog.removeById(id);
     }
 
     @Data

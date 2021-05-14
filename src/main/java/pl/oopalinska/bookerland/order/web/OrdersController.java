@@ -6,18 +6,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.oopalinska.bookerland.catalog.domain.Book;
-import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase;
-import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
-import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase.PlaceOrderResponse;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
+import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase.RichOrder;
 import pl.oopalinska.bookerland.order.domain.Order;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
 import pl.oopalinska.bookerland.order.domain.Recipient;
+import pl.oopalinska.bookerland.web.CreatedURI;
 
-import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,18 +24,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/orders")
 @RestController
 @AllArgsConstructor
-public class OrderController {
-    private final PlaceOrderUseCase placeOrderService;
+public class OrdersController {
+    private final ManipulateOrderUseCase manipulateOrderService;
     private final QueryOrderUseCase queryOrderService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Order> getAllOrders() {
+    public List<RichOrder> getAllOrders() {
         return queryOrderService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id) {
         return queryOrderService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -44,15 +43,15 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> createOrder(@Valid @RequestBody CreateOrderCommand command) {
-        PlaceOrderResponse response = placeOrderService.placeOrder(command.toPlaceOrderCommand());
+    public ResponseEntity<Object> createOrder(@RequestBody CreateOrderCommand command) {
+        PlaceOrderResponse response = manipulateOrderService.placeOrder(command.toPlaceOrderCommand());
         if (!response.isSuccess()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, response.getErrors().toString());
         }
-            return ResponseEntity.created(createdOrderUri(response.getOrderId())).build();
-    }
-    private URI createdOrderUri(Long orderId) {
-        return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + orderId.toString()).build().toUri();
+            return ResponseEntity.created(orderUri(response.getOrderId())).build();
+}
+    private URI orderUri(Long orderId) {
+        return new CreatedURI("/" + orderId).uri();
     }
 
     @PutMapping("/{id}/status")
@@ -60,14 +59,14 @@ public class OrderController {
     public void updateOrderStatus(@PathVariable Long id, @RequestBody UpdateStatusCommand command) {
         var orderStatus = OrderStatus
                 .parseString(command.status)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't update... " + command.status));
-        placeOrderService.updateOrderStatus(id, orderStatus);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown status: " + command.status));
+        manipulateOrderService.updateOrderStatus(id, orderStatus);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
-        placeOrderService.deleteOrderById(id);
+        manipulateOrderService.deleteOrderById(id);
     }
 
     @Data
@@ -78,17 +77,16 @@ public class OrderController {
         PlaceOrderCommand toPlaceOrderCommand() {
             List<OrderItem> orderItems = items
                     .stream()
-                    .map(item -> new OrderItem(item.getBook(), item.quantity))
+                    .map(item -> new OrderItem(item.bookId, item.quantity))
                     .collect(Collectors.toList());
             return new PlaceOrderCommand(orderItems, recipient.toRecipient());
         }
     }
     @Data
     static class OrderItemCommand {
-        Book book;
+        Long bookId;
         int quantity;
     }
-
     @Data
     static class RecipientCommand {
         String name;
@@ -102,7 +100,6 @@ public class OrderController {
             return new Recipient(name, phone, street, city, zipCode, email);
         }
     }
-
     @Data
     static class UpdateStatusCommand {
         String status;

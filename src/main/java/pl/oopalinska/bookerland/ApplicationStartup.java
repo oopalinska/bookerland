@@ -8,9 +8,9 @@ import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.CreateBo
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.UpdateBookCommand;
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase.UpdateBookResponse;
 import pl.oopalinska.bookerland.catalog.domain.Book;
-import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase;
-import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
-import pl.oopalinska.bookerland.order.application.port.PlaceOrderUseCase.PlaceOrderResponse;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.Recipient;
@@ -21,23 +21,23 @@ import java.util.List;
 @Component
 public class ApplicationStartup implements CommandLineRunner {
     private final CatalogUseCase catalog;
-    private final PlaceOrderUseCase placeOrder;
-    private final QueryOrderUseCase queryOrder;
+    private final ManipulateOrderUseCase manipulateOrderService;
+    private final QueryOrderUseCase queryOrderService;
     private final String title;
     private final String author;
     private final Long limit;
 
     public ApplicationStartup(
             CatalogUseCase catalog,
-            PlaceOrderUseCase placeOrder,
-            QueryOrderUseCase queryOrder,
+            ManipulateOrderUseCase manipulateOrderService,
+            QueryOrderUseCase queryOrderService,
             @Value("${bookerland.catalog.title}") String title,
             @Value("${bookerland.catalog.author}") String author,
             @Value("${bookerland.catalog.limit}") Long limit
     ) {
             this.catalog = catalog;
-            this.placeOrder = placeOrder;
-            this.queryOrder = queryOrder;
+            this.manipulateOrderService = manipulateOrderService;
+            this.queryOrderService = queryOrderService;
             this.title = title;
             this.author = author;
             this.limit = limit;
@@ -70,13 +70,14 @@ public class ApplicationStartup implements CommandLineRunner {
         PlaceOrderCommand command = PlaceOrderCommand
                 .builder()
                 .recipient(recipient)
-                .item(new OrderItem(panTadeusz, 16))
-                .item(new OrderItem(chlopi, 7))
+                .item(new OrderItem(panTadeusz.getId(), 16))
+                .item(new OrderItem(chlopi.getId(), 7))
                 .build();
-        PlaceOrderResponse response = placeOrder.placeOrder((command));
+
+        PlaceOrderResponse response = manipulateOrderService.placeOrder((command));
         System.out.println("Created ORDER with id: " + response.getOrderId());
 
-        queryOrder.findAll()
+        queryOrderService.findAll()
                 .forEach(order -> System.out.println("GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS: " + order));
     }
 
