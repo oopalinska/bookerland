@@ -1,3 +1,46 @@
+GET http://localhost:8080/orders/10
+
+<> 2021-05-25T142555.200.json
+
+###
+
+GET http://localhost:8080/orders/5
+
+###
+
+PUT http://localhost:8080/orders/10/status
+Content-Type: application/json
+
+{
+  "status": "CONFIRMED"
+}
+
+###
+
+PUT http://localhost:8080/orders/5/status
+Content-Type: application/json
+
+{
+  "status": "CONFIRMED"
+}
+
+###
+
+PUT http://localhost:8080/orders/5/status
+Content-Type: application/json
+
+{
+  "status": "CONFIRMED"
+}
+
+###
+
+PUT http://localhost:8080/orders/5/status
+
+<> 2021-05-25T142215.400.json
+
+###
+
 GET http://localhost:8080/orders
 
 <> 2021-05-25T141606.200.json

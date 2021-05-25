@@ -19,6 +19,7 @@ public class Order {
     private Long id;
 
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.NEW;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
