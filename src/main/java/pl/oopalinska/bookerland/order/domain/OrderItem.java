@@ -14,8 +14,8 @@ public class OrderItem {
     @Id
     @GeneratedValue
     private Long id;
-    Long bookId;
-    int quantity;
+    private Long bookId;
+    private int quantity;
 
     public OrderItem(Long bookId, int quantity) {
         this.bookId = bookId;

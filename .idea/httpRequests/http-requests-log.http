@@ -1,3 +1,15 @@
+GET http://localhost:8080/orders
+
+<> 2021-05-25T141606.200.json
+
+###
+
+GET http://localhost:8080/catalog
+
+<> 2021-05-25T141458.200.json
+
+###
+
 GET http://localhost:8080/catalog
 
 <> 2021-05-25T130213.200.json

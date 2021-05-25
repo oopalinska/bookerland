@@ -14,7 +14,7 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
-        var order = Order
+        Order order = Order
                 .builder()
                 .recipient(command.getRecipient())
                 .items(command.getItems())

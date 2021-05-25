@@ -11,7 +11,6 @@ import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.Pl
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase.RichOrder;
-import pl.oopalinska.bookerland.order.domain.Order;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
 import pl.oopalinska.bookerland.order.domain.Recipient;
