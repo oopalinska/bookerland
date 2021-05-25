@@ -1,10 +1,24 @@
 package pl.oopalinska.bookerland.order.domain;
 
-import lombok.Value;
-import pl.oopalinska.bookerland.catalog.domain.Book;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Data
+@Entity
+@NoArgsConstructor
 public class OrderItem {
+    @Id
+    @GeneratedValue
+    private Long id;
     Long bookId;
     int quantity;
+
+    public OrderItem(Long bookId, int quantity) {
+        this.bookId = bookId;
+        this.quantity = quantity;
+    }
 }
