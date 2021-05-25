@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "title": "Atlas Chmur",
+    "author": "David Mitchell",
+    "year": 2008,
+    "price": 19.90,
+    "coverId": null
+  },
+  {
+    "id": 2,
+    "title": "Harry Potter i Więzień Azkabanu",
+    "author": "J.K. Rowling",
+    "year": 2005,
+    "price": 29.90,
+    "coverId": null
+  },
+  {
+    "id": 3,
+    "title": "Zmierzch",
+    "author": "Stephenie Meyer",
+    "year": 2007,
+    "price": 15.90,
+    "coverId": null
+  },
+  {
+    "id": 4,
+    "title": "Gra w Klasy",
+    "author": "Julio Cortazar",
+    "year": 2001,
+    "price": 35.90,
+    "coverId": null
+  },
+  {
+    "id": 5,
+    "title": "Cień Wiatru",
+    "author": "Carlos Ruiz Zafon",
+    "year": 2002,
+    "price": 27.90,
+    "coverId": null
+  },
+  {
+    "id": 7,
+    "title": "Ogniem i Mieczem",
+    "author": "Henryk Sienkiewicz",
+    "year": 1884,
+    "price": 19.90,
+    "coverId": null
+  },
+  {
+    "id": 8,
+    "title": "Chłopi",
+    "author": "Stanisław Reymont",
+    "year": 1904,
+    "price": 13.90,
+    "coverId": null
+  },
+  {
+    "id": 9,
+    "title": "Pan Wołodyjowski",
+    "author": "Henryk Sienkiewicz",
+    "year": 1854,
+    "price": 17.90,
+    "coverId": null
+  },
+  {
+    "id": 6,
+    "title": "Pan Tadeusz, czyli Ostatni Zajazd na Litwie",
+    "author": "Adam Mickiewicz",
+    "year": 1834,
+    "price": 15.90,
+    "coverId": null
+  }
+]

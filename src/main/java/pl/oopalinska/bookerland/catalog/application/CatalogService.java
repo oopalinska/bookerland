@@ -3,11 +3,10 @@ package pl.oopalinska.bookerland.catalog.application;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase;
+import pl.oopalinska.bookerland.catalog.db.BookJpaRepository;
 import pl.oopalinska.bookerland.catalog.domain.Book;
-import pl.oopalinska.bookerland.catalog.domain.CatalogRepository;
 import pl.oopalinska.bookerland.uploads.application.ports.UploadUseCase;
 import pl.oopalinska.bookerland.uploads.application.ports.UploadUseCase.SaveUploadCommand;
-import pl.oopalinska.bookerland.uploads.domain.Upload;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 class CatalogService implements CatalogUseCase {
-    private final CatalogRepository repository;
+    private final BookJpaRepository repository;
     private final UploadUseCase upload;
 
     @Override
@@ -76,7 +75,7 @@ class CatalogService implements CatalogUseCase {
     }
     @Override
     public void removeById(Long id){
-        repository.removeById(id);
+        repository.deleteById(id);
     }
 
     @Override

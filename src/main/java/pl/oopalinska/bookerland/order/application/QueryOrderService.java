@@ -2,8 +2,8 @@ package pl.oopalinska.bookerland.order.application;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.oopalinska.bookerland.catalog.db.BookJpaRepository;
 import pl.oopalinska.bookerland.catalog.domain.Book;
-import pl.oopalinska.bookerland.catalog.domain.CatalogRepository;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
 import pl.oopalinska.bookerland.order.domain.Order;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class QueryOrderService implements QueryOrderUseCase {
     private final OrderRepository repository;
-    private final CatalogRepository catalogRepository;
+    private final BookJpaRepository catalogRepository;
 
     public List<RichOrder> findAll() {
         return repository.findAll()
