@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+  db:
+    container_name: bookerland
+    image: postgres:12.4
+    restart: always
+    environment:
+      POSTGRES_DB: bookerland
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: qwerty
+    ports:
+      - 7432:5432

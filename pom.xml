@@ -16,10 +16,20 @@
 	<properties>
 		<java.version>15</java.version>
 		<lombok.version>1.18.12</lombok.version>
-		<hibernate.validator.version>6.2.0.Final</hibernate.validator.version>
+		<hibernate.validator.version>6.1.0.Final</hibernate.validator.version>
 		<commons.lang.version>3.11</commons.lang.version>
+		<postgres.version>42.2.20</postgres.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgres.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
