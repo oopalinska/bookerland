@@ -78,15 +78,21 @@ class CatalogService implements CatalogUseCase {
     }
     private Book toBook(CreateBookCommand command) {
         Book book = new Book(command.getTitle(), command.getYear(), command.getPrice());
-        Set<Author> authors = command.getAuthors().stream()
+        Set<Author> authors = fetchAuthorsByIds(command.getAuthors());
+        book.setAuthors(authors);
+        return book;
+    }
+
+    private Set<Author> fetchAuthorsByIds(Set<Long> authors) {
+        return authors
+                .stream()
                 .map(authorId -> authorRepository
                         .findById(authorId)
                         .orElseThrow(() -> new IllegalArgumentException(("Unable to find author with id: " + authorId)))
                 )
                 .collect(Collectors.toSet());
-        book.setAuthors(authors);
-        return book;
     }
+
     @Override
     public void removeById(Long id){
         repository.deleteById(id);
@@ -97,12 +103,27 @@ class CatalogService implements CatalogUseCase {
         return repository
                 .findById(command.getId())
                 .map(book -> {
-                    var updatedBook = command.updateFields(book);
+                    var updatedBook = updateFields(command, book);
                     repository.save(updatedBook);
                     return UpdateBookResponse.SUCCESS;
                 })
                 .orElseGet(() -> new UpdateBookResponse(false, Collections.singletonList("Book not found with id: " + command.getId())));
     }
+    private Book updateFields(UpdateBookCommand command, Book book) {
+            if (command.getTitle() != null) {
+                book.setTitle(command.getTitle());
+            }
+            if (command.getAuthors() != null && command.getAuthors().size() > 0) {
+                book.setAuthors(fetchAuthorsByIds(command.getAuthors()));
+            }
+            if (command.getYear() != null) {
+                book.setYear(command.getYear());
+            }
+            if (command.getPrice() != null) {
+                book.setPrice(command.getPrice());
+            }
+            return book;
+        }
 
     @Override
     public void updateBookCover(UpdateBookCoverCommand command) {
