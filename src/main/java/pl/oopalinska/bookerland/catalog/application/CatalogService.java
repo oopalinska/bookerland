@@ -59,11 +59,11 @@ class CatalogService implements CatalogUseCase {
     private Book toBook(CreateBookCommand command) {
         Book book = new Book(command.getTitle(), command.getYear(), command.getPrice());
         Set<Author> authors = fetchAuthorsByIds(command.getAuthors());
-        updateBook(book, authors);
+        updateBooks(book, authors);
         return book;
     }
 
-    private void updateBook(Book book, Set<Author> authors) {
+    private void updateBooks(Book book, Set<Author> authors) {
         book.removeAuthors();
         authors.forEach(book::addAuthor);
     }
@@ -84,12 +84,12 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
+    @Transactional
     public UpdateBookResponse updateBook(UpdateBookCommand command) {
         return repository
                 .findById(command.getId())
                 .map(book -> {
-                    var updatedBook = updateFields(command, book);
-                    repository.save(updatedBook);
+                    updateFields(command, book);
                     return UpdateBookResponse.SUCCESS;
                 })
                 .orElseGet(() -> new UpdateBookResponse(false, Collections.singletonList("Book not found with id: " + command.getId())));
@@ -99,7 +99,7 @@ class CatalogService implements CatalogUseCase {
                 book.setTitle(command.getTitle());
             }
             if (command.getAuthors() != null && command.getAuthors().size() > 0) {
-                updateBook(book, fetchAuthorsByIds(command.getAuthors()));
+                updateBooks(book, fetchAuthorsByIds(command.getAuthors()));
             }
             if (command.getYear() != null) {
                 book.setYear(command.getYear());
