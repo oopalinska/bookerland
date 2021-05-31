@@ -1,26 +1,24 @@
 package pl.oopalinska.bookerland.catalog.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import pl.oopalinska.bookerland.jpa.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @ToString(exclude = "books")
-public class Author {
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Author extends BaseEntity {
+
     private String firstName;
     private String lastName;
 

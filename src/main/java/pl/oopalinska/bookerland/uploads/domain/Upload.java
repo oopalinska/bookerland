@@ -1,9 +1,12 @@
 package pl.oopalinska.bookerland.uploads.domain;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import pl.oopalinska.bookerland.jpa.BaseEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -11,14 +14,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-public class Upload {
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Upload extends BaseEntity {
+
     private byte[] file;
     private String contentType;
     private String fileName;

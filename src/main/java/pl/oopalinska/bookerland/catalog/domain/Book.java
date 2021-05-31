@@ -1,19 +1,18 @@
 package pl.oopalinska.bookerland.catalog.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import pl.oopalinska.bookerland.jpa.BaseEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -21,10 +20,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Book {
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Book extends BaseEntity {
+
     private String title;
 
     private Integer year;
