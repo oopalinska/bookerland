@@ -7,9 +7,11 @@ import pl.oopalinska.bookerland.catalog.db.BookJpaRepository;
 import pl.oopalinska.bookerland.catalog.domain.Book;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
 import pl.oopalinska.bookerland.order.db.OrderJpaRepository;
+import pl.oopalinska.bookerland.order.db.RecipientJpaRepository;
 import pl.oopalinska.bookerland.order.domain.Order;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
+import pl.oopalinska.bookerland.order.domain.Recipient;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class ManipulateOrderService implements ManipulateOrderUseCase {
     private final OrderJpaRepository repository;
     private final BookJpaRepository bookJpaRepository;
+    private final RecipientJpaRepository recipientJpaRepository;
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
@@ -29,12 +32,18 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
                                             .collect(Collectors.toSet());
         Order order = Order
                 .builder()
-                .recipient(command.getRecipient())
+                .recipient(getOrCreateRecipient(command.getRecipient()))
                 .items(items)
                 .build();
         Order save = repository.save(order);
         bookJpaRepository.saveAll(updateBooks(items));
         return PlaceOrderResponse.success(save.getId());
+    }
+
+    private Recipient getOrCreateRecipient(Recipient recipient) {
+        return recipientJpaRepository
+                .findByEmailIgnoreCase(recipient.getEmail())
+                .orElse(recipient);
     }
 
     private Set<Book> updateBooks(Set<OrderItem> items) {
