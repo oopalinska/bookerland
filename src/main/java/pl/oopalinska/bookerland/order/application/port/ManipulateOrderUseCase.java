@@ -1,9 +1,6 @@
 package pl.oopalinska.bookerland.order.application.port;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Singular;
-import lombok.Value;
+import lombok.*;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
 import pl.oopalinska.bookerland.order.domain.Recipient;
@@ -21,8 +18,13 @@ public interface ManipulateOrderUseCase {
     @AllArgsConstructor
     class PlaceOrderCommand {
         @Singular
-        List<OrderItem> items;
+        List<OrderItemCommand> items;
         Recipient recipient;
+    }
+    @Value
+    class OrderItemCommand {
+        Long bookId;
+        int quantity;
     }
 
     void deleteOrderById(Long id);

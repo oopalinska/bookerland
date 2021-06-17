@@ -18,10 +18,7 @@ import pl.oopalinska.bookerland.catalog.domain.Book;
 import pl.oopalinska.bookerland.web.CreatedURI;
 
 import javax.validation.Valid;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -106,6 +103,10 @@ public class CatalogController {
         @NotEmpty
         private Set<Long> authors;
 
+        @NotEmpty
+        @PositiveOrZero
+        private Long available;
+
         @NotNull
         private Integer year;
         @NotNull
@@ -113,7 +114,7 @@ public class CatalogController {
         private BigDecimal price;
 
         CreateBookCommand toCreateCommand() {
-            return new CreateBookCommand(title, authors, year, price);
+            return new CreateBookCommand(title, authors, year, price, available);
         }
         UpdateBookCommand toUpdateCommand(Long id) {
             return new UpdateBookCommand(id, title, authors, year, price);

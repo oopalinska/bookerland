@@ -42,8 +42,8 @@ public class OrdersController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> createOrder(@RequestBody CreateOrderCommand command) {
-        PlaceOrderResponse response = manipulateOrderService.placeOrder(command.toPlaceOrderCommand());
+    public ResponseEntity<Object> createOrder(@RequestBody PlaceOrderCommand command) {
+        PlaceOrderResponse response = manipulateOrderService.placeOrder(command);
         if (!response.isSuccess()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, response.getErrors().toString());
         }
@@ -68,37 +68,6 @@ public class OrdersController {
         manipulateOrderService.deleteOrderById(id);
     }
 
-    @Data
-    static class CreateOrderCommand {
-        List<OrderItemCommand> items;
-        RecipientCommand recipient;
-
-        PlaceOrderCommand toPlaceOrderCommand() {
-            List<OrderItem> orderItems = items
-                    .stream()
-                    .map(item -> new OrderItem(item.bookId, item.quantity))
-                    .collect(Collectors.toList());
-            return new PlaceOrderCommand(orderItems, recipient.toRecipient());
-        }
-    }
-    @Data
-    static class OrderItemCommand {
-        Long bookId;
-        int quantity;
-    }
-    @Data
-    static class RecipientCommand {
-        String name;
-        String phone;
-        String street;
-        String city;
-        String zipCode;
-        String email;
-
-        Recipient toRecipient() {
-            return new Recipient(name, phone, street, city, zipCode, email);
-        }
-    }
     @Data
     static class UpdateStatusCommand {
         String status;

@@ -10,6 +10,8 @@ import pl.oopalinska.bookerland.catalog.db.AuthorJpaRepository;
 import pl.oopalinska.bookerland.catalog.domain.Author;
 import pl.oopalinska.bookerland.catalog.domain.Book;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.OrderItemCommand;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.Recipient;
@@ -50,11 +52,11 @@ public class AdminController {
                 .email("janusz@kow.pl")
                 .build();
 
-        ManipulateOrderUseCase.PlaceOrderCommand command = ManipulateOrderUseCase.PlaceOrderCommand
+        PlaceOrderCommand command = PlaceOrderCommand
                 .builder()
                 .recipient(recipient)
-                .item(new OrderItem(effectiveJava.getId(), 16))
-                .item(new OrderItem(puzzlers.getId(), 7))
+                .item(new OrderItemCommand(effectiveJava.getId(), 16))
+                .item(new OrderItemCommand(puzzlers.getId(), 7))
                 .build();
 
         ManipulateOrderUseCase.PlaceOrderResponse response = manipulateOrderService.placeOrder((command));
@@ -73,11 +75,13 @@ public class AdminController {
         CatalogUseCase.CreateBookCommand effectiveJava = new CatalogUseCase.CreateBookCommand("Effective Java",
                 Set.of(joshua.getId()),
                 2005,
-                new BigDecimal("79.90"));
+                new BigDecimal("79.90"),
+                50L);
         CatalogUseCase.CreateBookCommand javaPuzzlers = new CatalogUseCase.CreateBookCommand("Java Puzzlers",
                 Set.of(joshua.getId(), neal.getId()),
                 2018,
-                new BigDecimal("99.90"));
+                new BigDecimal("99.90"),
+                50L);
         catalog.addBook(effectiveJava);
         catalog.addBook(javaPuzzlers);
     }
