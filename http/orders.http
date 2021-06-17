@@ -1,9 +1,43 @@
-GET http://localhost:8080/orders/10
+### Initialize data
+POST http://localhost:8080/admin/data
+
+### Catalog
+GET http://localhost:8080/catalog
 
 ###
-PUT http://localhost:8080/orders/10/status
+POST http://localhost:8080/orders
 Content-Type: application/json
 
 {
-  "status": "CONFIRMED"
+  "items": [
+    {
+      "bookId": 3,
+      "quantity": 2
+    },
+    {
+      "bookId": 4,
+      "quantity": 1
+    }
+  ],
+  "recipient": {
+    "name": "Stachu Spoko",
+    "phone": "123-456-789",
+    "street": "Fajna 18/134",
+    "city": "Duże Miasto",
+    "zipCode": "00-123",
+    "email": "elostachu@jol.pl"
+  }
 }
+
+###
+GET http://localhost:8080/orders/9
+
+###
+PUT http://localhost:8080/orders/9/status
+Content-Type: application/json
+
+{
+  "status": "SHIPPED"
+}
+
+
