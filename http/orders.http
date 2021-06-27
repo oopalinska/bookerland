@@ -33,11 +33,11 @@ Content-Type: application/json
 GET http://localhost:8080/orders
 
 ###
-PUT http://localhost:8080/orders/9/status
+PUT http://localhost:8080/orders/13/status
 Content-Type: application/json
 
 {
-  "status": "SHIPPED"
+  "status": "CANCELED"
 }
 
 
