@@ -1,6 +1,7 @@
 package pl.oopalinska.bookerland.catalog.web;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,12 +14,12 @@ import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.OrderItemCommand;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
-import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.Recipient;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin")
 @AllArgsConstructor
@@ -60,10 +61,10 @@ public class AdminController {
                 .build();
 
         ManipulateOrderUseCase.PlaceOrderResponse response = manipulateOrderService.placeOrder((command));
-        System.out.println("Created ORDER with id: " + response.getOrderId());
+        log.info("Created ORDER with id: " + response.getOrderId());
 
         queryOrderService.findAll()
-                .forEach(order -> System.out.println("GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS: " + order));
+                .forEach(order -> log.info("GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS: " + order));
     }
 
     private void initData() {

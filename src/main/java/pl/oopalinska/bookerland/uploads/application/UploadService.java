@@ -1,13 +1,14 @@
 package pl.oopalinska.bookerland.uploads.application;
 
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.oopalinska.bookerland.uploads.application.ports.UploadUseCase;
 import pl.oopalinska.bookerland.uploads.db.UploadJpaRepository;
 import pl.oopalinska.bookerland.uploads.domain.Upload;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UploadService implements UploadUseCase {
@@ -21,7 +22,7 @@ public class UploadService implements UploadUseCase {
                 command.getFile()
         );
         repository.save(upload);
-        System.out.println("Upload saved: " + upload.getFileName() + " with id: " + upload.getId());
+        log.info("Upload saved: " + upload.getFileName() + " with id: " + upload.getId());
         return upload;
     }
 
