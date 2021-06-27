@@ -20,9 +20,8 @@ import java.util.Set;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class Book extends BaseEntity {
-
+    @Column(unique = true)
     private String title;
-
     private Integer year;
     private BigDecimal price;
     private Long coverId;
