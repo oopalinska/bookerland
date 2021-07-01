@@ -10,15 +10,12 @@ import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
-import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase.RichOrder;
-import pl.oopalinska.bookerland.order.domain.OrderItem;
+import pl.oopalinska.bookerland.order.application.RichOrder;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
-import pl.oopalinska.bookerland.order.domain.Recipient;
 import pl.oopalinska.bookerland.web.CreatedURI;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequestMapping("/orders")
 @RestController
