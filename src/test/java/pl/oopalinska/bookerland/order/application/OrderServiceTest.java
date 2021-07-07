@@ -1,5 +1,6 @@
 package pl.oopalinska.bookerland.order.application;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -61,8 +62,68 @@ class OrderServiceTest {
         //then
         assertEquals(50L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
-
     }
+    @Test
+    public void userCannotRevokePaidOrder() {
+        //given
+        Book effectiveJava = givenEffectiveJava(50L);
+        Long orderId = placedOrder(effectiveJava.getId(), 15);
+        service.updateOrderStatus(orderId, OrderStatus.PAID);
+        //when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            service.updateOrderStatus(orderId, OrderStatus.CANCELED);
+        });
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        //then
+        assertTrue(exception.getMessage().contains("Unable to mark"));
+    }
+    @Test
+    public void userCannotRevokeShippedOrder() {
+        //given
+        Book effectiveJava = givenEffectiveJava(50L);
+        Long orderId = placedOrder(effectiveJava.getId(), 15);
+        service.updateOrderStatus(orderId, OrderStatus.PAID);
+        service.updateOrderStatus(orderId, OrderStatus.SHIPPED);
+        //when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            service.updateOrderStatus(orderId, OrderStatus.CANCELED);
+        });
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        //then
+        assertTrue(exception.getMessage().contains("Unable to mark"));
+    }
+    @Test
+    public void userCannotOrderNotExistingBooks() {
+        //given
+        PlaceOrderCommand command = PlaceOrderCommand
+                .builder()
+                .recipient(recipient())
+                .item(new OrderItemCommand(-1L, 15))
+                .build();
+        //when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            service.placeOrder(command);
+        });
+        //then
+        assertEquals("The book with id: " + command.getItems().get(0).getBookId() + " does not exist in our repository.", exception.getMessage());
+    }
+    @Test
+    public void userCannotOrderNegativeNumberOfBooks() {
+        //given
+        Book effectiveJava = givenEffectiveJava(50L);
+        PlaceOrderCommand command = PlaceOrderCommand
+                .builder()
+                .recipient(recipient())
+                .item(new OrderItemCommand(effectiveJava.getId(), -15))
+                .build();
+        //when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            service.placeOrder(command);
+        });
+        //then
+        assertEquals("Quantity cannot be negative!", exception.getMessage());
+    }
+
     private Long placedOrder(Long bookId, int copies) {
         PlaceOrderCommand command = PlaceOrderCommand
                 .builder()

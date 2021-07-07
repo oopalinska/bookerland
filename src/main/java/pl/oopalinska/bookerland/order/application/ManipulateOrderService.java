@@ -10,6 +10,8 @@ import pl.oopalinska.bookerland.order.db.OrderJpaRepository;
 import pl.oopalinska.bookerland.order.db.RecipientJpaRepository;
 import pl.oopalinska.bookerland.order.domain.*;
 
+import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,12 +57,27 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     private OrderItem toOrderItem(OrderItemCommand command) {
-        Book book = bookJpaRepository.getOne(command.getBookId());
+        Book book = getOneBook(command);
         int quantity = command.getQuantity();
-        if (book.getAvailable() >= quantity) {
-            return new OrderItem(book, quantity);
+        quantityCheck(book, quantity);
+        return new OrderItem(book, quantity);
+    }
+
+    private Book getOneBook(OrderItemCommand command) {
+        Optional<Book> bookOptional = bookJpaRepository.findById(command.getBookId());
+        if(bookOptional.isEmpty()) {
+            throw new IllegalArgumentException("The book with id: " + command.getBookId() + " does not exist in our repository.");
         }
-        throw new IllegalArgumentException("Too many copies of book " + book.getId() + " requested: " + quantity + " of " + book.getAvailable() + " available.");
+        return bookOptional.get();
+    }
+
+    private void quantityCheck(Book book, int quantity) {
+        if (quantity < 0) {
+        throw new IllegalArgumentException("Quantity cannot be negative!");
+        }
+        if (book.getAvailable() < quantity) {
+            throw new IllegalArgumentException("Too many copies of book " + book.getId() + " requested: " + quantity + " of " + book.getAvailable() + " available.");
+        }
     }
 
     @Override

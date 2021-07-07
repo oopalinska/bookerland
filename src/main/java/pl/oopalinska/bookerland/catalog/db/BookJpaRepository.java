@@ -33,4 +33,6 @@ public interface BookJpaRepository extends JpaRepository<Book, Long> {
                     " AND (lower(a.name) LIKE lower(concat('%', :author, '%'))) "
     )
     List<Book> findByTitleAndAuthor(@Param("title") String title, @Param("author") String author);
+
+    Optional<Book> findById(Long id);
 }
