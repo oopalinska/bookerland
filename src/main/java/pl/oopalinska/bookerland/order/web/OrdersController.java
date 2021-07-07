@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
-import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
 import pl.oopalinska.bookerland.order.application.RichOrder;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
@@ -40,11 +39,12 @@ public class OrdersController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> createOrder(@RequestBody PlaceOrderCommand command) {
-        PlaceOrderResponse response = manipulateOrderService.placeOrder(command);
-        if (!response.isSuccess()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, response.getErrors().toString());
-        }
-            return ResponseEntity.created(orderUri(response.getOrderId())).build();
+        return manipulateOrderService
+                .placeOrder(command)
+                .handle(
+                        orderId -> ResponseEntity.created(orderUri(orderId)).build(),
+                        error -> ResponseEntity.badRequest().body(error)
+                );
 }
     private URI orderUri(Long orderId) {
         return new CreatedURI("/" + orderId).uri();

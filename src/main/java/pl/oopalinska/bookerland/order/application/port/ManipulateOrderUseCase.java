@@ -1,6 +1,7 @@
 package pl.oopalinska.bookerland.order.application.port;
 
 import lombok.*;
+import pl.oopalinska.bookerland.commons.Either;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
 import pl.oopalinska.bookerland.order.domain.Recipient;
@@ -32,16 +33,15 @@ public interface ManipulateOrderUseCase {
     void updateOrderStatus(Long id, OrderStatus status);
 
     @Value
-    class PlaceOrderResponse {
-        boolean success;
-        Long orderId;
-        List<String> errors;
-
-        public static PlaceOrderResponse success(Long orderId) {
-            return new PlaceOrderResponse(true, orderId, emptyList());
+    class PlaceOrderResponse extends Either<String, Long> {
+        public PlaceOrderResponse(boolean success, String left, Long right) {
+            super(success, left, right);
         }
-        public static PlaceOrderResponse failure(String... errors) {
-            return new PlaceOrderResponse(false, null, Arrays.asList(errors));
+        public static PlaceOrderResponse success(Long orderId) {
+            return new PlaceOrderResponse(true, null, orderId);
+        }
+        public static PlaceOrderResponse failure(String error) {
+            return new PlaceOrderResponse(false, error, null);
         }
     }
 }
