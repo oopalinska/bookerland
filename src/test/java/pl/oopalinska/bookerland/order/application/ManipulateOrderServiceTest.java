@@ -2,8 +2,12 @@ package pl.oopalinska.bookerland.order.application;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
+import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase;
 import pl.oopalinska.bookerland.catalog.db.BookJpaRepository;
 import pl.oopalinska.bookerland.catalog.domain.Book;
 import pl.oopalinska.bookerland.order.domain.Recipient;
@@ -13,14 +17,17 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 import static pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.*;
 
-@DataJpaTest
-@Import(ManipulateOrderService.class)
+@SpringBootTest
+@AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ManipulateOrderServiceTest {
 
     @Autowired
     BookJpaRepository bookRepository;
     @Autowired
     ManipulateOrderService service;
+    @Autowired
+    CatalogUseCase catalogUseCase;
 
     @Test
     public void userCanPlaceOrder() {
@@ -30,13 +37,15 @@ class ManipulateOrderServiceTest {
         PlaceOrderCommand command = PlaceOrderCommand
                 .builder()
                 .recipient(recipient())
-                .item(new OrderItemCommand(effectiveJava.getId(), 10))
+                .item(new OrderItemCommand(effectiveJava.getId(), 15))
                 .item(new OrderItemCommand(jcip.getId(), 10))
                 .build();
         //when
         PlaceOrderResponse response = service.placeOrder(command);
         //then
         assertTrue(response.isSuccess());
+        assertEquals(35L, catalogUseCase.findById(effectiveJava.getId()).get().getAvailable());
+        assertEquals(40L, catalogUseCase.findById(jcip.getId()).get().getAvailable());
 
     }    @Test
     public void userCantOrderMoreBooksThanAvailable() {
