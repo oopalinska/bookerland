@@ -162,6 +162,36 @@ class OrderServiceTest {
         assertEquals(35L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
     }
+    @Test
+    public void adminCanRevokeOtherUsersOrder() {
+        //given
+        Book effectiveJava = givenEffectiveJava(50L);
+        String userEmail = "adam@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, userEmail);
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        //when
+        String adminEmail = "admin@example.org";
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, adminEmail);
+        service.updateOrderStatus(command);
+        //then
+        assertEquals(50L, availableCopiesOf(effectiveJava));
+        assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
+    }
+    @Test
+    public void adminCanMarkOrderAsPaid() {
+        //given
+        Book effectiveJava = givenEffectiveJava(50L);
+        String email = "marek@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, email);
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        //when
+        String adminEmail = "admin@example.org";
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, adminEmail);
+        service.updateOrderStatus(command);
+        //then
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        assertEquals(OrderStatus.PAID, queryOrderService.findById(orderId).get().getStatus());
+    }
 
     private Long placedOrder(Long bookId, int copies, String recipient) {
         PlaceOrderCommand command = PlaceOrderCommand
