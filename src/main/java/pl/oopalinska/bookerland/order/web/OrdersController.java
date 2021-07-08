@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.UpdateStatusCommand;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
 import pl.oopalinska.bookerland.order.application.RichOrder;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
@@ -15,6 +16,7 @@ import pl.oopalinska.bookerland.web.CreatedURI;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/orders")
 @RestController
@@ -52,21 +54,18 @@ public class OrdersController {
 
     @PutMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateOrderStatus(@PathVariable Long id, @RequestBody UpdateStatusCommand command) {
+    public void updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String status = body.get("status");
         var orderStatus = OrderStatus
-                .parseString(command.status)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown status: " + command.status));
-        manipulateOrderService.updateOrderStatus(id, orderStatus);
+                .parseString(status)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown status: " + status));
+        UpdateStatusCommand command = new UpdateStatusCommand(id, orderStatus, null);
+        manipulateOrderService.updateOrderStatus(command);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
         manipulateOrderService.deleteOrderById(id);
-    }
-
-    @Data
-    static class UpdateStatusCommand {
-        String status;
     }
 }
