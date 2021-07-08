@@ -16,6 +16,7 @@ import pl.oopalinska.bookerland.web.CreatedURI;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @RequestMapping("/orders")
@@ -54,13 +55,18 @@ public class OrdersController {
 
     @PutMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<Object> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String status = body.get("status");
         var orderStatus = OrderStatus
                 .parseString(status)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown status: " + status));
-        UpdateStatusCommand command = new UpdateStatusCommand(id, orderStatus, null);
-        manipulateOrderService.updateOrderStatus(command);
+        UpdateStatusCommand command = new UpdateStatusCommand(id, orderStatus, "admin@example.org");
+        return manipulateOrderService
+                .updateOrderStatus(command)
+                .handle(
+                        givenStatus -> ResponseEntity.accepted().body(givenStatus),
+                        error -> ResponseEntity.badRequest().body(error)
+                );
     }
 
     @DeleteMapping("/{id}")

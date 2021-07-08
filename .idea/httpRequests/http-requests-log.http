@@ -1,3 +1,59 @@
+POST http://localhost:8080/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "bookId": 3,
+      "quantity": 1
+    },
+    {
+      "bookId": 4,
+      "quantity": 3
+    }
+  ],
+  "recipient": {
+    "name": "Stachu Spoko",
+    "phone": "123-456-789",
+    "street": "Fajna 18/134",
+    "city": "Duże Miasto",
+    "zipCode": "00-123",
+    "email": "elostachu@jol.pl"
+  }
+}
+
+<> 2021-07-08T125956.400.json
+
+###
+
+POST http://localhost:8080/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "bookId": 3,
+      "quantity": 1
+    },
+    {
+      "bookId": 4,
+      "quantity": 3
+    }
+  ],
+  "recipient": {
+    "name": "Stachu Spoko",
+    "phone": "123-456-789",
+    "street": "Fajna 18/134",
+    "city": "Duże Miasto",
+    "zipCode": "00-123",
+    "email": "elostachu@jol.pl"
+  }
+}
+
+<> 2021-07-08T125836.400.json
+
+###
+
 GET http://localhost:8080/catalog
 
 <> 2021-06-27T133112.200.json
@@ -604,16 +660,6 @@ Content-Type: application/json
 GET http://localhost:8080/catalog
 
 <> 2021-06-17T140140.200.json
-
-###
-
-POST http://localhost:8080/admin/data
-
-###
-
-GET http://localhost:8080/orders/10
-
-<> 2021-05-26T125247.200.json
 
 ###
 
