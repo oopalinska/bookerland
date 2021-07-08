@@ -1,6 +1,5 @@
 package pl.oopalinska.bookerland.order.application;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -55,10 +54,12 @@ class OrderServiceTest {
     public void userCanRevokeOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        Long orderId = placedOrder(effectiveJava.getId(), 15);
+        String email = "marek@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, email);
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        service.updateOrderStatus(orderId, OrderStatus.CANCELED);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, email);
+        service.updateOrderStatus(command);
         //then
         assertEquals(50L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
@@ -67,29 +68,36 @@ class OrderServiceTest {
     public void userCannotRevokePaidOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        Long orderId = placedOrder(effectiveJava.getId(), 15);
-        service.updateOrderStatus(orderId, OrderStatus.PAID);
+        String email = "marek@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, email);
+        UpdateStatusCommand payCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, email);
+        service.updateOrderStatus(payCommand);
         //when
+        UpdateStatusCommand cancelCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, email);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            service.updateOrderStatus(orderId, OrderStatus.CANCELED);
+            service.updateOrderStatus(cancelCommand);
         });
-        assertEquals(35L, availableCopiesOf(effectiveJava));
         //then
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         assertTrue(exception.getMessage().contains("Unable to mark"));
     }
     @Test
     public void userCannotRevokeShippedOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        Long orderId = placedOrder(effectiveJava.getId(), 15);
-        service.updateOrderStatus(orderId, OrderStatus.PAID);
-        service.updateOrderStatus(orderId, OrderStatus.SHIPPED);
+        String email = "marek@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, email);
+        UpdateStatusCommand payCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, email);
+        service.updateOrderStatus(payCommand);
+        UpdateStatusCommand shipCommand = new UpdateStatusCommand(orderId, OrderStatus.SHIPPED, email);
+        service.updateOrderStatus(shipCommand);
         //when
+        UpdateStatusCommand cancelCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, email);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            service.updateOrderStatus(orderId, OrderStatus.CANCELED);
+            service.updateOrderStatus(cancelCommand);
         });
-        assertEquals(35L, availableCopiesOf(effectiveJava));
         //then
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         assertTrue(exception.getMessage().contains("Unable to mark"));
     }
     @Test
@@ -123,17 +131,8 @@ class OrderServiceTest {
         //then
         assertEquals("Quantity cannot be negative!", exception.getMessage());
     }
-
-    private Long placedOrder(Long bookId, int copies) {
-        PlaceOrderCommand command = PlaceOrderCommand
-                .builder()
-                .recipient(recipient())
-                .item(new OrderItemCommand(bookId, copies))
-                .build();
-        return service.placeOrder(command).getRight();
-    }
     @Test
-    public void userCantOrderMoreBooksThanAvailable() {
+    public void userCannotOrderMoreBooksThanAvailable() {
         //given
         Book effectiveJava = givenEffectiveJava(5L);
         PlaceOrderCommand command = PlaceOrderCommand
@@ -149,6 +148,32 @@ class OrderServiceTest {
         assertTrue(exception.getMessage().contains("Too many copies of book " + effectiveJava.getId() + " requested"));
 
     }
+    @Test
+    public void userCannotRevokeOtherUsersOrder() {
+        //given
+        Book effectiveJava = givenEffectiveJava(50L);
+        String email = "adam@example.org";
+        Long orderId = placedOrder(effectiveJava.getId(), 15, email);
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        //when
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, "marek@example.org");
+        service.updateOrderStatus(command);
+        //then
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
+    }
+
+    private Long placedOrder(Long bookId, int copies, String recipient) {
+        PlaceOrderCommand command = PlaceOrderCommand
+                .builder()
+                .recipient(recipient(recipient))
+                .item(new OrderItemCommand(bookId, copies))
+                .build();
+        return service.placeOrder(command).getRight();
+    }
+    private Long placedOrder(Long bookId, int copies) {
+        return placedOrder(bookId, copies, "john@example.org");
+    }
     private Book givenJavaConcurrency(long available) {
         return bookRepository.save(new Book("Java Concurrency in Practice", 2006, new BigDecimal("99.90"), available));
     }
@@ -157,6 +182,9 @@ class OrderServiceTest {
     }
     private Recipient recipient() {
         return Recipient.builder().email("john@example.org").build();
+    }
+    private Recipient recipient(String email) {
+        return Recipient.builder().email(email).build();
     }
     private Long availableCopiesOf(Book book) {
         return catalogUseCase.findById(book.getId()).get().getAvailable();
