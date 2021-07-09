@@ -192,6 +192,15 @@ class OrderServiceTest {
         assertEquals(35L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.PAID, queryOrderService.findById(orderId).get().getStatus());
     }
+    @Test
+    public void shippingCostsAreAddedToTotalOrderPrice() {
+        //given
+        Book book = givenBook(50L, "49.90");
+        //when
+        Long orderId = placedOrder(book.getId(), 1);
+        //then
+        assertEquals("59.80", orderOf(orderId).getFinalPrice().toPlainString());
+    }
 
     private Long placedOrder(Long bookId, int copies, String recipient) {
         PlaceOrderCommand command = PlaceOrderCommand
@@ -203,6 +212,12 @@ class OrderServiceTest {
     }
     private Long placedOrder(Long bookId, int copies) {
         return placedOrder(bookId, copies, "john@example.org");
+    }
+    private RichOrder orderOf(Long orderId) {
+        return queryOrderService.findById(orderId).get();
+    }
+    private Book givenBook(long available, String price) {
+        return bookRepository.save(new Book("Java Concurrency in Practice", 2006, new BigDecimal(price), available));
     }
     private Book givenJavaConcurrency(long available) {
         return bookRepository.save(new Book("Java Concurrency in Practice", 2006, new BigDecimal("99.90"), available));

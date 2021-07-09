@@ -2,6 +2,7 @@ package pl.oopalinska.bookerland.order.application.port;
 
 import lombok.*;
 import pl.oopalinska.bookerland.commons.Either;
+import pl.oopalinska.bookerland.order.domain.Delivery;
 import pl.oopalinska.bookerland.order.domain.OrderItem;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
 import pl.oopalinska.bookerland.order.domain.Recipient;
@@ -24,6 +25,7 @@ public interface ManipulateOrderUseCase {
         @Singular
         List<OrderItemCommand> items;
         Recipient recipient;
+        Delivery delivery;
     }
     @Value
     class OrderItemCommand {
