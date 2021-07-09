@@ -139,6 +139,6 @@ public class CatalogInitializerService implements CatalogInitializerUseCase {
         log.info(result);
 
         queryOrderService.findAll()
-                .forEach(order -> log.info("GOT ORDER WITH TOTAL PRICE: " + order.totalPrice() + " DETAILS: " + order));
+                .forEach(order -> log.info("GOT ORDER WITH TOTAL PRICE: " + order.getFinalPrice() + " DETAILS: " + order));
     }
 }
