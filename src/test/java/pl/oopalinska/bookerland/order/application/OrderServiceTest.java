@@ -9,6 +9,7 @@ import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase;
 import pl.oopalinska.bookerland.catalog.db.BookJpaRepository;
 import pl.oopalinska.bookerland.catalog.domain.Book;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
+import pl.oopalinska.bookerland.order.domain.Delivery;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
 import pl.oopalinska.bookerland.order.domain.Recipient;
 
@@ -201,12 +202,42 @@ class OrderServiceTest {
         //then
         assertEquals("59.80", orderOf(orderId).getFinalPrice().toPlainString());
     }
+    @Test
+    public void shippingCostsAreDiscountedOver100zl() {
+        //given
+        Book book = givenBook(50L, "49.90");
+        //when
+        Long orderId = placedOrder(book.getId(), 3);
+        //then
+        RichOrder order = orderOf(orderId);
+        assertEquals("149.70", order.getFinalPrice().toPlainString());
+        assertEquals("149.70", order.getOrderPrice().getItemsPrice().toPlainString());
+    }
+    @Test
+    public void cheapestBookIsHalfPricedWhenTotalOver200zl() {
+        //given
+        Book book = givenBook(50L, "49.90");
+        //when
+        Long orderId = placedOrder(book.getId(), 5);
+        //then
+        assertEquals("224.55", orderOf(orderId).getFinalPrice().toPlainString());
+    }
+    @Test
+    public void cheapestBookIsFreeWhenTotalOver400zl() {
+        //given
+        Book book = givenBook(50L, "49.90");
+        //when
+        Long orderId = placedOrder(book.getId(), 10);
+        //then
+        assertEquals("449.10", orderOf(orderId).getFinalPrice().toPlainString());
+    }
 
     private Long placedOrder(Long bookId, int copies, String recipient) {
         PlaceOrderCommand command = PlaceOrderCommand
                 .builder()
                 .recipient(recipient(recipient))
                 .item(new OrderItemCommand(bookId, copies))
+                .delivery(Delivery.COURIER)
                 .build();
         return service.placeOrder(command).getRight();
     }
