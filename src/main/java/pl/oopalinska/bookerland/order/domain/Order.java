@@ -27,6 +27,7 @@ public class Order extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
+    @Singular
     private Set<OrderItem> items;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -53,6 +54,9 @@ public class Order extends BaseEntity {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     public BigDecimal getDeliveryPrice() {
+        if(items.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
         return delivery.getPrice();
     }
 }
