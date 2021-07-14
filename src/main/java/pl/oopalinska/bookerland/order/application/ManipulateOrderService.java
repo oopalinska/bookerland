@@ -77,7 +77,8 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
         throw new IllegalArgumentException("Quantity cannot be negative!");
         }
         if (book.getAvailable() < quantity) {
-            throw new IllegalArgumentException("Too many copies of book " + book.getId() + " requested: " + quantity + " of " + book.getAvailable() + " available.");
+            throw new IllegalArgumentException("Too many copies of book " + book.getId() + " requested: " + quantity
+                    + " of " + book.getAvailable() + " available.");
         }
     }
 

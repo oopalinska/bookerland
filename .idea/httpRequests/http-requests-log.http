@@ -1,3 +1,7 @@
+POST http://localhost:8080/admin/data
+
+###
+
 POST http://localhost:8080/orders
 Content-Type: application/json
 
@@ -654,12 +658,6 @@ Content-Type: application/json
     "email": "elostachu@jol.pl"
   }
 }
-
-###
-
-GET http://localhost:8080/catalog
-
-<> 2021-06-17T140140.200.json
 
 ###
 
