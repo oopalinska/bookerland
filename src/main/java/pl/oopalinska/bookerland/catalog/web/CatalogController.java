@@ -65,7 +65,7 @@ public class CatalogController {
         return new CreatedURI("/" + book.getId().toString()).uri();
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateBook(@PathVariable Long id, @RequestBody RestBookCommand command) {
         UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
