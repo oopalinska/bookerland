@@ -23,6 +23,8 @@ import pl.oopalinska.bookerland.catalog.domain.Author;
 import pl.oopalinska.bookerland.catalog.domain.Book;
 import pl.oopalinska.bookerland.jpa.BaseEntity;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
+import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
 import pl.oopalinska.bookerland.order.domain.Recipient;
 
@@ -124,14 +126,14 @@ public class CatalogInitializerService implements CatalogInitializerUseCase {
                 .email("janusz@kow.pl")
                 .build();
 
-        ManipulateOrderUseCase.PlaceOrderCommand command = ManipulateOrderUseCase.PlaceOrderCommand
+        PlaceOrderCommand command = PlaceOrderCommand
                 .builder()
                 .recipient(recipient)
                 .item(new ManipulateOrderUseCase.OrderItemCommand(effectiveJava.getId(), 16))
                 .item(new ManipulateOrderUseCase.OrderItemCommand(puzzlers.getId(), 7))
                 .build();
 
-        ManipulateOrderUseCase.PlaceOrderResponse response = manipulateOrderService.placeOrder((command));
+        PlaceOrderResponse response = manipulateOrderService.placeOrder((command));
         String result = response.handle(
                 orderId -> "Created ORDER with id: " + orderId,
                 error -> "Failed to create order: " + error

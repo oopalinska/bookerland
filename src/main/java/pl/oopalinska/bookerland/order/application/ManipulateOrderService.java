@@ -10,7 +10,6 @@ import pl.oopalinska.bookerland.order.db.OrderJpaRepository;
 import pl.oopalinska.bookerland.order.db.RecipientJpaRepository;
 import pl.oopalinska.bookerland.order.domain.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
