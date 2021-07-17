@@ -33,7 +33,7 @@ Content-Type: application/json
 GET http://localhost:8080/orders
 
 ###
-DELETE http://localhost:8080/orders/111
+DELETE http://localhost:8080/orders/131
 
 ###
 PUT http://localhost:8080/orders/13/status

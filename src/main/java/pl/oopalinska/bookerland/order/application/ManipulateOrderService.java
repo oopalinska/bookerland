@@ -31,7 +31,7 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
         Order order = Order
                 .builder()
                 .recipient(getOrCreateRecipient(command.getRecipient()))
-                .delivery(command.getDelivery())
+                .delivery(command.getDelivery() == null ? Delivery.COURIER : command.getDelivery())
                 .items(items)
                 .build();
         Order savedOrder = repository.save(order);
