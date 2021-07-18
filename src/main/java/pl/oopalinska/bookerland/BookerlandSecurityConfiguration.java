@@ -13,7 +13,8 @@ public class BookerlandSecurityConfiguration extends WebSecurityConfigurerAdapte
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .mvcMatchers(HttpMethod.GET, "/catalog/**").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/catalog/**", "/uploads/**", "/authors/**").permitAll()
+                .mvcMatchers(HttpMethod.POST, "/orders").permitAll()
                 .anyRequest().authenticated()
             .and()
                 .httpBasic()

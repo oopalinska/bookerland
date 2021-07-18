@@ -51,7 +51,7 @@ public class OrdersController {
         return new CreatedURI("/" + orderId).uri();
     }
 
-    @PutMapping("/{id}/status")
+    @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<Object> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String status = body.get("status");
