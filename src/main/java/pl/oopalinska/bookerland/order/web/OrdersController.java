@@ -3,6 +3,7 @@ package pl.oopalinska.bookerland.order.web;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
@@ -24,12 +25,14 @@ public class OrdersController {
     private final ManipulateOrderUseCase manipulateOrderService;
     private final QueryOrderUseCase queryOrderService;
 
+    @Secured({"ROLE_ADMIN"})
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<RichOrder> getAllOrders() {
         return queryOrderService.findAll();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
     public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id) {
         return queryOrderService.findById(id)
@@ -51,6 +54,7 @@ public class OrdersController {
         return new CreatedURI("/" + orderId).uri();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<Object> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
@@ -66,7 +70,7 @@ public class OrdersController {
                         error -> ResponseEntity.badRequest().body(error)
                 );
     }
-
+    @Secured({"ROLE_ADMIN"})
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
