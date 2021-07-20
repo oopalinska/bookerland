@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase;
@@ -12,11 +14,14 @@ import pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.Up
 import pl.oopalinska.bookerland.order.application.port.QueryOrderUseCase;
 import pl.oopalinska.bookerland.order.application.RichOrder;
 import pl.oopalinska.bookerland.order.domain.OrderStatus;
+import pl.oopalinska.bookerland.security.UserSecurity;
 import pl.oopalinska.bookerland.web.CreatedURI;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RequestMapping("/orders")
 @RestController
@@ -24,6 +29,7 @@ import java.util.Map;
 public class OrdersController {
     private final ManipulateOrderUseCase manipulateOrderService;
     private final QueryOrderUseCase queryOrderService;
+    private final UserSecurity userSecurity;
 
     @Secured({"ROLE_ADMIN"})
     @GetMapping
@@ -34,10 +40,16 @@ public class OrdersController {
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
-    public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id, @AuthenticationPrincipal User user) {
         return queryOrderService.findById(id)
-                .map(ResponseEntity::ok)
+                .map(order -> authorize(order, user))
                 .orElse(ResponseEntity.notFound().build());
+    }
+    private ResponseEntity<RichOrder> authorize(RichOrder order, User user) {
+        if (userSecurity.isOwnerOrAdmin(order.getRecipient().getEmail(), user)) {
+            return ResponseEntity.ok(order);
+        }
+        return ResponseEntity.status(FORBIDDEN).build();
     }
 
     @PostMapping

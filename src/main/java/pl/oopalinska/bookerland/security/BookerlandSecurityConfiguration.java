@@ -1,4 +1,4 @@
-package pl.oopalinska.bookerland;
+package pl.oopalinska.bookerland.security;
 
 
 import org.springframework.context.annotation.Configuration;
