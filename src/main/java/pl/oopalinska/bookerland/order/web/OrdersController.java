@@ -68,18 +68,17 @@ public class OrdersController {
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PatchMapping("/{id}/status")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<Object> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<Object> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body, @AuthenticationPrincipal User user) {
         String status = body.get("status");
         var orderStatus = OrderStatus
                 .parseString(status)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown status: " + status));
-        UpdateStatusCommand command = new UpdateStatusCommand(id, orderStatus, "admin@example.org");
+        UpdateStatusCommand command = new UpdateStatusCommand(id, orderStatus, user);
         return manipulateOrderService
                 .updateOrderStatus(command)
                 .handle(
-                        givenStatus -> ResponseEntity.accepted().body(givenStatus),
-                        error -> ResponseEntity.badRequest().body(error)
+                        newStatus -> ResponseEntity.accepted().build(),
+                        error -> ResponseEntity.status(error.getStatus()).build()
                 );
     }
     @Secured({"ROLE_ADMIN"})

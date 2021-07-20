@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.annotation.DirtiesContext;
 import pl.oopalinska.bookerland.catalog.application.port.CatalogUseCase;
 import pl.oopalinska.bookerland.catalog.db.BookJpaRepository;
@@ -14,6 +16,7 @@ import pl.oopalinska.bookerland.order.domain.OrderStatus;
 import pl.oopalinska.bookerland.order.domain.Recipient;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static pl.oopalinska.bookerland.order.application.port.ManipulateOrderUseCase.*;
@@ -55,11 +58,11 @@ class OrderServiceTest {
     public void userCanRevokeOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        String email = "marek@example.org";
-        Long orderId = placedOrder(effectiveJava.getId(), 15, email);
+        User user = user("marek@example.org");
+        Long orderId = placedOrder(effectiveJava.getId(), 15, user.getUsername());
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, email);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, user);
         service.updateOrderStatus(command);
         //then
         assertEquals(50L, availableCopiesOf(effectiveJava));
@@ -69,12 +72,12 @@ class OrderServiceTest {
     public void userCannotRevokePaidOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        String email = "marek@example.org";
-        Long orderId = placedOrder(effectiveJava.getId(), 15, email);
-        UpdateStatusCommand payCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, email);
+        User user = user("marek@example.org");
+        Long orderId = placedOrder(effectiveJava.getId(), 15, user.getUsername());
+        UpdateStatusCommand payCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, user);
         service.updateOrderStatus(payCommand);
         //when
-        UpdateStatusCommand cancelCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, email);
+        UpdateStatusCommand cancelCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, user);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             service.updateOrderStatus(cancelCommand);
         });
@@ -86,14 +89,14 @@ class OrderServiceTest {
     public void userCannotRevokeShippedOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        String email = "marek@example.org";
-        Long orderId = placedOrder(effectiveJava.getId(), 15, email);
-        UpdateStatusCommand payCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, email);
+        User user = user("marek@example.org");
+        Long orderId = placedOrder(effectiveJava.getId(), 15, user.getUsername());
+        UpdateStatusCommand payCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, user);
         service.updateOrderStatus(payCommand);
-        UpdateStatusCommand shipCommand = new UpdateStatusCommand(orderId, OrderStatus.SHIPPED, email);
+        UpdateStatusCommand shipCommand = new UpdateStatusCommand(orderId, OrderStatus.SHIPPED, user);
         service.updateOrderStatus(shipCommand);
         //when
-        UpdateStatusCommand cancelCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, email);
+        UpdateStatusCommand cancelCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, user);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             service.updateOrderStatus(cancelCommand);
         });
@@ -157,7 +160,7 @@ class OrderServiceTest {
         Long orderId = placedOrder(effectiveJava.getId(), 15, email);
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, "marek@example.org");
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, user("marek@example.org"));
         service.updateOrderStatus(command);
         //then
         assertEquals(35L, availableCopiesOf(effectiveJava));
@@ -172,7 +175,7 @@ class OrderServiceTest {
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
         String adminEmail = "admin@example.org";
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, adminEmail);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, adminUser());
         service.updateOrderStatus(command);
         //then
         assertEquals(50L, availableCopiesOf(effectiveJava));
@@ -187,7 +190,7 @@ class OrderServiceTest {
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
         String adminEmail = "admin@example.org";
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, adminEmail);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, adminUser());
         service.updateOrderStatus(command);
         //then
         assertEquals(35L, availableCopiesOf(effectiveJava));
@@ -255,6 +258,12 @@ class OrderServiceTest {
     }
     private Book givenEffectiveJava(long available) {
         return bookRepository.save(new Book("Effective Java", 2005, new BigDecimal("199.90"), available));
+    }
+    private User user(String email) {
+        return new User(email, "", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    }
+    private User adminUser() {
+        return new User("admin", "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
     }
     private Recipient recipient() {
         return Recipient.builder().email("john@example.org").build();
