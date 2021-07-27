@@ -10,8 +10,13 @@ import pl.oopalinska.bookerland.user.db.UserEntityRepository;
 public class BookerlandUserDetailsService implements UserDetailsService {
 
     private final UserEntityRepository repository;
+    private final AdminConfig config;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        if(config.getUsername().equalsIgnoreCase(username)) {
+            return config.adminUser();
+        }
         return repository.findByUsernameIgnoreCase(username)
                 .map(UserEntityDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
