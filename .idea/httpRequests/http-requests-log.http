@@ -1,3 +1,112 @@
+GET http://localhost:8080/orders/140
+
+###
+
+GET http://localhost:8080/orders/107
+
+<> 2021-07-28T140452.200.json
+
+###
+
+# @no-redirect
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+"username": "janusz@kow.pl",
+"password": "xxx"
+}
+
+###
+
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "username": "janusz@kow.pl",
+  "password": "xxx"
+}
+
+###
+
+GET http://localhost:8080/orders/140
+
+<> 2021-07-28T140041.200.json
+
+###
+
+# @no-redirect
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+"username": "marek@example.org",
+"password": "xxx"
+}
+
+###
+
+GET http://localhost:8080/orders/140
+
+<> 2021-07-28T140028.401.json
+
+###
+
+# @no-redirect
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+"username": "marek@example.org",
+"password": "xxx"
+}
+
+###
+
+GET http://localhost:8080/orders/140
+
+<> 2021-07-28T135150.500.json
+
+###
+
+GET http://localhost:8080/orders
+
+<> 2021-07-28T135055.403.json
+
+###
+
+# @no-redirect
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+"username": "marek@example.org",
+"password": "xxx"
+}
+
+###
+
+# @no-redirect
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+"username": "marek@example.org",
+"password": "xxx"
+}
+
+###
+
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "username": "marek@example.org",
+  "password": "xxx"
+}
+
+###
+
 POST http://localhost:8080/users
 Content-Type: application/json
 
@@ -577,244 +686,6 @@ Content-Type: application/json
 
 {
   "status": "CANCELED"
-}
-
-###
-
-GET http://localhost:8080/orders
-
-<> 2021-06-27T125705.200.json
-
-###
-
-POST http://localhost:8080/orders
-Content-Type: application/json
-
-{
-  "items": [
-    {
-      "bookId": 3,
-      "quantity": 8
-    },
-    {
-      "bookId": 4,
-      "quantity": 13
-    }
-  ],
-  "recipient": {
-    "name": "Stachu Spoko",
-    "phone": "123-456-789",
-    "street": "Fajna 18/134",
-    "city": "Duże Miasto",
-    "zipCode": "00-123",
-    "email": "elostachu@jol.pl"
-  }
-}
-
-###
-
-POST http://localhost:8080/orders
-Content-Type: application/json
-
-{
-  "items": [
-    {
-      "bookId": 3,
-      "quantity": 8
-    },
-    {
-      "bookId": 4,
-      "quantity": 13
-    }
-  ],
-  "recipient": {
-    "name": "Stachu Spoko",
-    "phone": "123-456-789",
-    "street": "Fajna 18/134",
-    "city": "Duże Miasto",
-    "zipCode": "00-123",
-    "email": "elostachu@jol.pl"
-  }
-}
-
-###
-
-POST http://localhost:8080/admin/data
-
-###
-
-POST http://localhost:8080/orders
-Content-Type: application/json
-
-{
-  "items": [
-    {
-      "bookId": 3,
-      "quantity": 8
-    },
-    {
-      "bookId": 4,
-      "quantity": 13
-    }
-  ],
-  "recipient": {
-    "name": "Stachu Spoko",
-    "phone": "123-456-789",
-    "street": "Fajna 18/134",
-    "city": "Duże Miasto",
-    "zipCode": "00-123",
-    "email": "elostachu@jol.pl"
-  }
-}
-
-<> 2021-06-17T154516.400.json
-
-###
-
-POST http://localhost:8080/orders
-Content-Type: application/json
-
-{
-  "items": [
-    {
-      "bookId": 3,
-      "quantity": 8
-    },
-    {
-      "bookId": 4,
-      "quantity": 13
-    }
-  ],
-  "recipient": {
-    "name": "Stachu Spoko",
-    "phone": "123-456-789",
-    "street": "Fajna 18/134",
-    "city": "Duże Miasto",
-    "zipCode": "00-123",
-    "email": "elostachu@jol.pl"
-  }
-}
-
-###
-
-POST http://localhost:8080/orders
-Content-Type: application/json
-
-{
-  "items": [
-    {
-      "bookId": 3,
-      "quantity": 30
-    },
-    {
-      "bookId": 4,
-      "quantity": 30
-    }
-  ],
-  "recipient": {
-    "name": "Stachu Spoko",
-    "phone": "123-456-789",
-    "street": "Fajna 18/134",
-    "city": "Duże Miasto",
-    "zipCode": "00-123",
-    "email": "elostachu@jol.pl"
-  }
-}
-
-###
-
-POST http://localhost:8080/orders
-Content-Type: application/json
-
-{
-  "items": [
-    {
-      "bookId": 3,
-      "quantity": 60
-    },
-    {
-      "bookId": 4,
-      "quantity": 1
-    }
-  ],
-  "recipient": {
-    "name": "Stachu Spoko",
-    "phone": "123-456-789",
-    "street": "Fajna 18/134",
-    "city": "Duże Miasto",
-    "zipCode": "00-123",
-    "email": "elostachu@jol.pl"
-  }
-}
-
-<> 2021-06-17T153606.400.json
-
-###
-
-GET http://localhost:8080/orders
-
-<> 2021-06-17T153417.200.json
-
-###
-
-POST http://localhost:8080/orders
-Content-Type: application/json
-
-{
-  "items": [
-    {
-      "bookId": 3,
-      "quantity": 2
-    },
-    {
-      "bookId": 4,
-      "quantity": 1
-    }
-  ],
-  "recipient": {
-    "name": "Stachu Spoko",
-    "phone": "123-456-789",
-    "street": "Fajna 18/134",
-    "city": "Duże Miasto",
-    "zipCode": "00-123",
-    "email": "elostachu@jol.pl"
-  }
-}
-
-###
-
-POST http://localhost:8080/admin/data
-
-###
-
-GET http://localhost:8080/catalog
-
-<> 2021-06-17T144458.200.json
-
-###
-
-POST http://localhost:8080/orders
-Content-Type: application/json
-
-{
-  "items": [
-    {
-      "bookId": 3,
-      "quantity": 2
-    },
-    {
-      "bookId": 4,
-      "quantity": 1
-    }
-  ],
-  "recipient": {
-    "name": "Stachu Spoko",
-    "phone": "123-456-789",
-    "street": "Fajna 18/134",
-    "city": "Duże Miasto",
-    "zipCode": "00-123",
-    "email": "elostachu@jol.pl"
-  }
 }
 
 ###

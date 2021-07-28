@@ -2,6 +2,19 @@ POST localhost:8080/users
 Content-Type: application/json
 
 {
-  "username": "marek@example.org",
+  "username": "janusz@kow.pl",
   "password": "xxx"
 }
+
+###
+// @no-redirect
+POST localhost:8080/login
+Content-Type: application/json
+
+{
+"username": "janusz@kow.pl",
+"password": "xxx"
+}
+
+###
+GET localhost:8080/orders/140

@@ -13,7 +13,7 @@ import pl.oopalinska.bookerland.users.application.port.UserRegistrationUseCase;
 public class UserService implements UserRegistrationUseCase {
 
     private final UserEntityRepository repository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder encoder;
 
     @Transactional
     @Override
@@ -21,7 +21,7 @@ public class UserService implements UserRegistrationUseCase {
         if (repository.findByUsernameIgnoreCase(username).isPresent()) {
             return RegisterResponse.failure("Account already exists.");
         }
-        UserEntity entity = new UserEntity(username, password);
+        UserEntity entity = new UserEntity(username, encoder.encode(password));
         return RegisterResponse.success(repository.save(entity));
     }
 }
