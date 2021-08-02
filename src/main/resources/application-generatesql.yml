@@ -3,7 +3,7 @@ spring:
   flyway.enabled: false
   jpa.properties.javax.persistence.schema-generation.scripts:
     action: create
-    create-target: create.sql
+    create-target: V1__initial_script.sql
     create-source: metadata
 spring.datasource.url: jdbc:postgresql://localhost:7432/bookerland
 spring.datasource.username: admin

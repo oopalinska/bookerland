@@ -2,7 +2,6 @@ package pl.oopalinska.bookerland.order.application.port;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.oopalinska.bookerland.commons.Either;
 import pl.oopalinska.bookerland.order.domain.Delivery;
