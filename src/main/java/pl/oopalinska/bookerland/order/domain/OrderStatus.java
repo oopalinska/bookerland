@@ -9,12 +9,16 @@ public enum OrderStatus {
     NEW {
         @Override
         public UpdateStatusResult updateStatus(OrderStatus status) {
-            return switch(status) {
-                case PAID -> UpdateStatusResult.ok(PAID);
-                case CANCELED -> UpdateStatusResult.revoked(CANCELED);
-                case ABANDONED -> UpdateStatusResult.revoked(ABANDONED);
-                default -> super.updateStatus(status);
-            };
+            switch (status) {
+                case PAID:
+                    return UpdateStatusResult.ok(PAID);
+                case CANCELED:
+                    return UpdateStatusResult.revoked(CANCELED);
+                case ABANDONED:
+                    return UpdateStatusResult.revoked(ABANDONED);
+                default:
+                    return super.updateStatus(status);
+            }
         }
     },
     PAID {
