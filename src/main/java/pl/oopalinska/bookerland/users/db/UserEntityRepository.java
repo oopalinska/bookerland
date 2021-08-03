@@ -1,7 +1,7 @@
-package pl.oopalinska.bookerland.user.db;
+package pl.oopalinska.bookerland.users.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import pl.oopalinska.bookerland.user.domain.UserEntity;
+import pl.oopalinska.bookerland.users.domain.UserEntity;
 
 import java.util.Optional;
 

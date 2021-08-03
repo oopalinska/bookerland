@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import pl.oopalinska.bookerland.user.db.UserEntityRepository;
+import pl.oopalinska.bookerland.users.db.UserEntityRepository;
 
 @AllArgsConstructor
 public class BookerlandUserDetailsService implements UserDetailsService {

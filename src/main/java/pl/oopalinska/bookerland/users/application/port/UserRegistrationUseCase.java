@@ -1,7 +1,7 @@
 package pl.oopalinska.bookerland.users.application.port;
 
 import pl.oopalinska.bookerland.commons.Either;
-import pl.oopalinska.bookerland.user.domain.UserEntity;
+import pl.oopalinska.bookerland.users.domain.UserEntity;
 
 public interface UserRegistrationUseCase {
 

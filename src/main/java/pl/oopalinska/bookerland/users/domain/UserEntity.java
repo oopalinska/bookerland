@@ -1,4 +1,4 @@
-package pl.oopalinska.bookerland.user.domain;
+package pl.oopalinska.bookerland.users.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

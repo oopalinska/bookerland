@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.oopalinska.bookerland.user.db.UserEntityRepository;
-import pl.oopalinska.bookerland.user.domain.UserEntity;
+import pl.oopalinska.bookerland.users.db.UserEntityRepository;
+import pl.oopalinska.bookerland.users.domain.UserEntity;
 import pl.oopalinska.bookerland.users.application.port.UserRegistrationUseCase;
 
 @Service
